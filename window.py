@@ -136,7 +136,6 @@ class Window(QtWidgets.QMainWindow):
                 QtWidgets.QMessageBox.critical(self, 'Error', 'Некоторые значения заданы неверно')
                 return
         try:
-        if 1:
             detail_items = DetailItem.create_from_multiple_list(self.data['initial_queue'])
             j = Johnson(detail_items)
             opt = j.optimize(self.ui.alterMethodCheckBox.isChecked())
