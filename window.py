@@ -135,15 +135,15 @@ class Window(QtWidgets.QMainWindow):
             if len(list(filter(lambda x: not type(x) is float or x < 0, i))) > 0:
                 QtWidgets.QMessageBox.critical(self, 'Error', 'Некоторые значения заданы неверно')
                 return
-        #try:
+        try:
         if 1:
             detail_items = DetailItem.create_from_multiple_list(self.data['initial_queue'])
             j = Johnson(detail_items)
             opt = j.optimize(self.ui.alterMethodCheckBox.isChecked())
             orig_params = j.get_original_params()
-        #except Exception:
-        #    QtWidgets.QMessageBox.critical(self, 'Error', 'Произошла ошибка при вычислениях')
-        #    return
+        except Exception:
+            QtWidgets.QMessageBox.critical(self, 'Error', 'Произошла ошибка при вычислениях')
+            return
         try:
             self.output_result(opt['path'], opt['params'], orig_params)
         except Exception:
