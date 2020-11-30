@@ -159,14 +159,13 @@ class Window(QtWidgets.QMainWindow):
                                                             for i in range(len(result_params))], ['DT'])
         self.ui.optimizedQueueTableView.model().add_column([result_params[str(i)]['sum_working']
                                                             for i in range(len(result_params))], ['UT'])
-        self.ui.optimizedQueueTableView.resizeColumnsToContents()
 
         if orig_params:
-            self.ui.initialQueueTableView.model().add_column([orig_params[str(i)]['sum_delay']
-                                                                for i in range(len(result_params))], ['DT'])
-            self.ui.initialQueueTableView.model().add_column([orig_params[str(i)]['sum_working']
-                                                                for i in range(len(result_params))], ['UT'])
-            self.ui.initialQueueTableView.resizeColumnsToContents()
+            self.ui.optimizedQueueTableView.model().add_column([orig_params[str(i)]['sum_delay']
+                                                                for i in range(len(result_params))], ['SDT'])
+            self.ui.optimizedQueueTableView.model().add_column([orig_params[str(i)]['sum_working']
+                                                                for i in range(len(result_params))], ['SUT'])
+        self.ui.optimizedQueueTableView.resizeColumnsToContents()
 
         file_diagram = self.draw_plot(result_params)
         pixmap = QPixmap(file_diagram)

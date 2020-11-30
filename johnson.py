@@ -79,7 +79,7 @@ class Johnson:
                                                                 min(a.machines_processing[1] + a.machines_processing[2],
                                                                     b.machines_processing[0]))
             else:
-                opt = Johnson.__opt_cmb([copy.deepcopy(x) for x in self.data])
+                opt = Johnson.__opt_cmb([copy.deepcopy(x) for x in self.data], 3)
         elif method == 'alternative':
             if min_1st_machine >= max_2nd_machine or min_3rd_machine >= max_2nd_machine:
                 opt = self.__custom_johnson_method(lambda a, b: min(a.machines_processing[0] + a.machines_processing[1],
@@ -87,7 +87,7 @@ class Johnson:
                                                                 min(a.machines_processing[1] + a.machines_processing[2],
                                                                     b.machines_processing[0] + b.machines_processing[1]))
             else:
-                opt = Johnson.__opt_cmb([copy.deepcopy(x) for x in self.data])
+                opt = Johnson.__opt_cmb([copy.deepcopy(x) for x in self.data], 3)
         else:
             raise Exception('Undefined method')
         opt_params = Johnson.__calc_up_downtime(opt, 3)
@@ -116,10 +116,7 @@ class Johnson:
                 prev_tasks_duration = sum([start_work_times[j] for j in range(len(start_work_times)) if j < i])
                 tasks.append({'delay': {'starts': prev_tasks_duration, 'duration': 0},
                               'activity': {'starts': prev_tasks_duration, 'duration': start_work_times[i]}})
-            tracing = {'0': {'tasks': tasks,
-                             'sum_delay': 0, 'sum_working': sum(start_work_times)
-                             }
-                       }
+            tracing = {'0': {'tasks': tasks, 'sum_delay': 0, 'sum_working': sum(start_work_times)}}
         curr_machine = prev_machine + 1
         delays = []
         for i in range(len(data)):
@@ -154,20 +151,20 @@ class Johnson:
         return sum([i.machines_processing[1] for i in data]) + Johnson.__find_sum_delay(data)
 
     @staticmethod
-    def __opt_cmb(data, prev=None, index=0, opt_path=None):
+    def __opt_cmb(data, units_count, prev=None, index=0, opt_path=None):
         if prev is None:
             prev = [0 for _ in range(len(data))]
         if opt_path is None:
-            opt_path = dict(duration=math.inf, delay=math.inf, path=None)
+            opt_path = dict(duration=math.inf, path=None)
         if not len(data):
-            delay = Johnson.__find_sum_delay(prev)
-            duration = Johnson.__find_sum_duration(prev)
-            if opt_path['duration'] > duration:
-                opt_path['duration'] = duration
-                opt_path['delay'] = delay
-                opt_path['path'] = prev
+            properties = Johnson.__calc_up_downtime(prev, units_count)
+            max_duration = max([properties[i]['sum_working'] for i in properties])
+            # print(','.join([str(i.name) for i in prev]), ', d=', str(max_duration))
+            if opt_path['duration'] > max_duration:
+                opt_path['duration'] = max_duration
+                opt_path['path'] = [copy.deepcopy(x) for x in prev]
         else:
             for i in range(len(data)):
                 prev[index] = copy.deepcopy(data[i])
-                Johnson.__opt_cmb(data[:i] + data[i + 1:], prev, index+1,opt_path)
+                Johnson.__opt_cmb(data[:i] + data[i + 1:], units_count, prev, index+1, opt_path)
         return opt_path['path']

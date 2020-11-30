@@ -147,6 +147,7 @@ class TableModel(QtCore.QAbstractTableModel):
             raise Exception('Incorrect range count')
         for i in range(len(self.data_matrix)):
             self.data_matrix[i] = self.data_matrix[i][:-count]
+        self.vertical_header = self.vertical_header[:-count]
         self.column_count -= count
         self.layoutChanged.emit()
 
